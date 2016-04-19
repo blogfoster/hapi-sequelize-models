@@ -1,0 +1,21 @@
+# docker compose file for `development` environment
+version: '2'
+
+services:
+  hapi-sequelize-models:
+    # uses: buildpack-deps:jessie
+    build: .
+    # mount the working dir to the docker code dir
+    volumes:
+      - .:/src
+    environment:
+      - NODE_ENV=development
+      - MYSQL_HOST=mysql
+      - MYSQL_USER=root
+      - MYSQL_PASSWORD=password
+    command: ':'
+
+  mysql:
+    build: ./docker/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=password

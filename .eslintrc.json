@@ -1,0 +1,17 @@
+{
+  "env": {
+    "es6": true,
+    "node": true,
+    "mocha": true
+  },
+  "parser": "babel-eslint",
+  "extends": "airbnb",
+  "rules": {
+    "max-len": [ 2, 120, 2 ],
+    "comma-dangle": [ 2, "never" ],
+    "no-shadow": [ 0 ],
+    "func-names": [ 0 ],
+    "prefer-arrow-callback": [ 0 ],
+    "arrow-body-style": [ 0 ]
+  }
+}
