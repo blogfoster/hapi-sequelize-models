@@ -1,0 +1,10 @@
+language: node_js
+node_js:
+  - "5"
+services:
+  - mysql
+env:
+  - MYSQL_HOST=mysql MYSQL_USER=root MYSQL_PASSWORD=
+before_install:
+  - mysql -uroot < ./docker/mysql/test.sql
+  - mysql -uroot < ./docker/mysql/test2.sql
