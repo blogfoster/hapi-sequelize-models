@@ -1,5 +1,8 @@
 # hapi-sequelize-models
 
+[![travis-develop][004]][005]
+[![npm-dependencies][006]][007]
+
 This is a Hapi plugin to load your sequelize models. Your models should defined so that
 [they can be imported][001]. The plugin itself will not require `Sequelize`, instead you
 have to pass it as an option.
@@ -123,3 +126,7 @@ npm test
 [001]: http://docs.sequelizejs.com/en/latest/docs/models-definition/#import
 [002]: https://www.docker.com/products/docker-toolbox
 [003]: http://docs.sequelizejs.com/en/latest/api/sequelize/
+[004]: https://travis-ci.org/blogfoster/hapi-sequelize-models.svg?branch=develop
+[005]: https://travis-ci.org/blogfoster/hapi-sequelize-models
+[006]: https://david-dm.org/blogfoster/hapi-sequelize-models.svg
+[007]: https://david-dm.org/blogfoster/hapi-sequelize-models
