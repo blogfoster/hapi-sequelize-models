@@ -77,11 +77,11 @@ describe('[integration/plugin]', function () {
 
     describe('when plugin is loaded', function () {
       it('should make models available as `server.plugins[\'hapi-sequelize-models\']`', function () {
-        expect(server.plugins['hapi-sequelize-models']).toExist();
+        expect(server.plugins['hapi-sequelize-models'].models).toExist();
       });
 
       it('should load all defined models', function () {
-        const models = server.plugins['hapi-sequelize-models'];
+        const { models } = server.plugins['hapi-sequelize-models'];
 
         expect(models.test).toExist();
         expect(models.test2).toExist();
@@ -89,7 +89,7 @@ describe('[integration/plugin]', function () {
       });
 
       it('should load Sequelize.Models', function () {
-        const models = server.plugins['hapi-sequelize-models'];
+        const { models } = server.plugins['hapi-sequelize-models'];
 
         expect(models.test).toBeA(Sequelize.Model);
         expect(models.test2).toBeA(Sequelize.Model);
@@ -97,7 +97,7 @@ describe('[integration/plugin]', function () {
       });
 
       it('should attach an `connection` function to each model, to get the sequelize connection', function () {
-        const models = server.plugins['hapi-sequelize-models'];
+        const { models } = server.plugins['hapi-sequelize-models'];
 
         expect(typeof models.test.connection).toEqual('function');
         expect(models.test.connection()).toExist();

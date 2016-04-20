@@ -92,8 +92,8 @@ const plugin = {
 
     const models = loadModels(pluginConfig);
 
-    // expose models - they're now available under server.plugins['hapi-sequelize-models']
-    server.expose(models);
+    // expose models - they're now available under server.plugins['hapi-sequelize-models'].models
+    server.expose('models', models);
 
     // on server stop - close all connections and reset connecitons cache
     server.ext('onPostStop', (server, next) => {

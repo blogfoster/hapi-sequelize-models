@@ -52,7 +52,7 @@ return server.register({
 ```javascript
 const handler = {
   handleRequest(request, reply) {
-    const models = request.server.plugins['hapi-sequelize-models'];
+    const { models } = request.server.plugins['hapi-sequelize-models'];
 
     return models.test.findAll()
       .then(reply);
@@ -80,13 +80,13 @@ const handler = {
 Models should be defined so that they can be imported using [sequelize.import][001]. For convenience
 a `.connection()` function is attached to each model, to access its underlaying sequelize connection.
 
-Also models will be avaialabe using `server.plugins['hapi-sequelize-models'].<modelName>`. Here `<modelName>`
+Also models will be availabe using `server.plugins['hapi-sequelize-models'].models.<modelName>`. Here `<modelName>`
 is not the name defined in `sequelize.define`, but the filename, which is also used in the `databases[*].models[*]`.
 
 ```javascript
 const handler = {
   handleRequest(request, reply) {
-    const models = request.server.plugins['hapi-sequelize-models'];
+    const { models } = request.server.plugins['hapi-sequelize-models'];
 
     const sequelize = models.test.connection();
     sequelize.query('SELECT * FROM *');
