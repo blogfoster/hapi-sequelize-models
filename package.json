@@ -1,6 +1,6 @@
 {
   "name": "hapi-sequelize-models",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "hapi sequelize model loader plugin",
   "main": "dist/index.js",
   "scripts": {
