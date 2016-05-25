@@ -3,9 +3,9 @@
 [![travis-develop][004]][005]
 [![npm-dependencies][006]][007]
 
-This is a Hapi plugin to load your sequelize models. Your models should defined so that
-[they can be imported][001]. The plugin itself will not require `Sequelize`, instead you
-have to pass it as an option.
+This is a Hapi plugin to load your sequelize models. Your models should be defined so that
+[they can be imported by sequelize][001]. The plugin itself will not require `Sequelize`,
+instead you have to pass it in as an option.
 
 
 ## usage
