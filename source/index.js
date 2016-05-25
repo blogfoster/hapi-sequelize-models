@@ -87,7 +87,7 @@ const plugin = {
 
     const pluginConfig = result.value;
     if (!pluginConfig.options.logging) {
-      pluginConfig.options.logging = (...msg) => { server.log(['trace'], ...msg); };
+      pluginConfig.options.logging = (...msg) => { server.log([ 'trace' ], ...msg); };
     }
 
     const models = loadModels(pluginConfig);

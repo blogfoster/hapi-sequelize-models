@@ -55,11 +55,11 @@ describe('[integration/plugin]', function () {
             databases: [
               {
                 database: 'test',
-                models: ['test', 'test2']
+                models: [ 'test', 'test2' ]
               },
               {
                 database: 'test2',
-                models: ['xxx']
+                models: [ 'xxx' ]
               }
             ]
           }
