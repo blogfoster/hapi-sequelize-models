@@ -13,17 +13,22 @@ branches:
   except:
     - "/^v[0-9]/" # dont build tags separately as they are build anyway for the push
 
+install:
+  - npm prune
+  - npm install
+
 script:
   - npm run eslint
   - npm test
 
 deploy:
   provider: npm
+  email: npm@blogfoster.com
+  api_key:
+    secure: J4WhHaVD5W8CAOBBMmw8J6Xe8QIIRXpsetBFqh+jA3mLgAoTy8gdqxVoQCoY8bPBiFZ4X4l6Ic10g6PRzpkBXET1MZpbcr4PSxndBnRLNAmW+Rh+gPj3zcNvYSZ5fHWHseNxtudZnccKL5lQSLWxYooY5U7hi20dSR3Q0PueGWOmxLn4yTfmzdCasmtAmfiMtn1dfepspRod8Ge6u1mVT0qA6bfRuQx8qL0wGb5fWhngRwCo5Ik+WvgRlD8vFQ6F8Rb5WMzkx8o3gD/I7WIneNlcW7k48E9XqijkAXg/MIl3VTIaVWgBi2v94QyBCC6TNZvDwFUF+x9xlf6ydAb7nqY3qhS36lw5jjZSaXYuTcztUVTRluXMRWN2T1gccD4RYIm0ndVFahSysotCh+r4Yww/pAkdsT61fE3upRzfHSexHE5eZ2tOlkUk+J2uyKT6esryrLtPLl5ICFAWEQ3e1sVvReUefzQtz14mx+aCLDq221bKqw3Nu4mgIEXTLcSH91R7d5bB+JKgCM25AAKaU/ZR+EymLQQRYAn9/dsxHZB3Uc05LBklRcpdJmg2yUNERmWWpWQNcUY9QZmWiJSrDAG2fxbqPA8jcc1tTf5XqrsyXKgtidyVtlgQk2Kt5cf534ke3HbfSSJKylctQ35HARvJjQIxs/LGbKOMRdpD2yU=
   wait-until-deployed: true
   skip_cleanup: true
   on:
     repo: blogfoster/hapi-sequelize-models
     branch: master
     condition: "$(git describe --exact-match HEAD)" # only deploy if the commit is referenced by a tag as well
-  api_key:
-    secure: 1S7T9LvwKXSdmFswuB4W0aqHkxrc3I+K7ulnt4KeHd6q6PSSYlG194pX42lcmf9IsyL0V3kSnfgwW7+2Wro5XtcoSJtc/dceGO3e7iNZl+gM9gTEUTBEQ+wOi2ehCkTmM8tMMvPc+zEY0MXoWVZuo+SRElDE3ikPUTyAbt2ehFKSU2w+oZjD8voD9n+5jzr1JZVkqXHQZs0/OHEZQoNgEcFQVic7upK9E0/4NYYOtuINoalvraqWHWBOdcdn3NvKwSZX6W9asQ2NUkhJZnY3kKbvCHu71Un70e5EGWKsAIayk5qWxKR4oQSK0YcOzF16mKZUGEZacO9LzsLyaMfiNetrJF6I4ewUqaPSvcpvgAAIkwWIutaFpuwIOmsT6nQvLSoqnbcVkgPoTmIy9nZX8SKjSmFAcsGkXcGWO6W3X8ntLnX/Groq9bJBjQ68LjvHTu2YuAze+kVu512uZyCc8oiaQvJQ2bqD8M2T0yJpibg9yCsauHE9DiNF6PPRPHTEpK6EV9fN1jgG0h8H5stTw/f66+mV1d2VzAnm/D53irCVE600xQDE/KaS+G4X276Y5cZJtiLTaKdZf11GxE4Vc/E+sKjwSy9xXisPOd4VlwDYUtP/qFwL8tiMNiP65s0SLCVh8/nilTV/7gtgrHfA3GMM4zGmO3nu08faqGnT3h0=
