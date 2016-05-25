@@ -22,9 +22,6 @@ script:
   - npm test
 
 deploy:
-  edge:
-    source: blogfoster/dpl
-    branch: feature/npm
   provider: npm
   email: npm@blogfoster.com
   api_key:
