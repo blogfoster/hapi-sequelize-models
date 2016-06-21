@@ -16,23 +16,28 @@ instead you have to pass it in as an option.
 import HapiSequelizeModels from 'hapi-sequelize-models';
 import Sequelize from 'sequelize';
 
+const mysqlConfig = {
+  username: process.env.MYSQL_USER,
+  password: process.env.MYSQL_PASSWORD,
+  options: {
+    host: process.env.MYSQL_HOST,
+    dialect: 'mysql'
+  },
+  modelsPath: Path.join(__dirname, '../models')
+};
+
 return server.register({
   register: HapiSequelizeModels,
   options: {
     Sequelize,
-    username: process.env.MYSQL_USER,
-    password: process.env.MYSQL_PASSWORD,
-    options: {
-      host: process.env.MYSQL_HOST,
-      dialect: 'mysql'
-    },
-    modelsPath: Path.join(__dirname, '../models'),
-    databases: [
+    connections: [
       {
+        ...mysqlConfig,
         database: 'test',
         models: ['test', 'test2']
       },
       {
+        ...mysqlConfig,
         database: 'test2',
         models: ['xxx']
       }
@@ -63,17 +68,17 @@ const handler = {
 ## plugin api
 
 - `Sequelize` - sequelize npm module (`require('sequelize')`)
-- `[username]` - *optional* database user name
-- `[password]` - *optional* database user password
-- `[options = {}]` - *optional* [sequelize options][003]
-    - `[options.host]` - *optional* - database host
-    - `[options.dialect]` - *optional* - database dialect
-    - `[options.logging]` - *optional* - logging function, if not set this defaults to `(...msg) => server.log(['trace'], ...mgs)`
-- `modelsPath` - path to models
-- `[databases = []]` - *optional* - collection of databases
-    - `databases[*].database` - database name
-    - `databases[*].models` - list of models that should be loaded
-        - `databases[*].models[*]` - String: model name; model must be available under `modelsPath/modelname`
+- `[connections = []]` - *optional* list of connection definitions
+    - `database` - database name or database uri
+    - `[username]` - *optional* database user name
+    - `[password]` - *optional* database user password
+    - `[options = {}]` - *optional* [sequelize options][003]
+        - `[host]` - *optional* database host
+        - `[dialect]` - *optional* database dialect
+        - `[logging = (...msg) => server.log(['trace'], ...mgs)]` - *optional* logging function
+    - `modelsPath` - path to your model definitions
+    - `[models = []]` - *optional* list of models that should be loaded
+        - `[*]` - *(String)* model names; models must be located at `<modelsPath>/<modelName>`
 
 ## model definition
 
@@ -94,7 +99,7 @@ const handler = {
 };
 ```
 
-### Associates
+### Associations
 
 After all models are loaded, the plugin iterates through all of them to check if an `associate` function was
 defined. If so it calls it with all `models`. The assoication must then happen within that function.
@@ -112,6 +117,11 @@ export default function defineUser(sequelize, DataTypes) {
   });
 }
 ```
+
+### Caveats
+
+- it's not possible to define multiple connections with the same host + port + schema + database setup
+- it's not possible to define different models with the same name
 
 ## development
 
