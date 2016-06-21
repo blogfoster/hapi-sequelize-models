@@ -1,27 +1,48 @@
 import Joi from 'joi';
 import Path from 'path';
 
-import pkg from '../package';
+import Pkg from '../package';
 
 const ConfigSchema = Joi.object().keys({
   Sequelize: Joi.func().required().description('Sequelize npm module'),
-  username: Joi.string().optional().description('database username'),
-  password: Joi.string().optional().description('database password'),
-  options: Joi.object().keys({
-    host: Joi.string().optional().description('database host'),
-    dialect: Joi.string().optional().description('sequelize dialect'),
-    logging: Joi.func().optional()
-                .description('logger function, if not set defaults to server.log([\'trace\'], ...args)')
-  }).optional().default({}).options({ allowUnknown: true }),
-  modelsPath: Joi.string().required().description('path to your model definitions'),
-  databases: Joi.array().items(Joi.object().keys({
-    database: Joi.string().required().description('database name'),
+  connections: Joi.array().items(Joi.object().keys({
+    database: Joi.string().required().description('database name or database uri'),
+    username: Joi.string().optional().description('database username'),
+    password: Joi.string().optional().description('database password'),
+    options: Joi.object().keys({
+      host: Joi.string().optional().description('database host'),
+      dialect: Joi.string().optional().description('sequelize dialect'),
+      logging: Joi.func().optional()
+                  .description('logger function, if not set defaults to server.log([\'trace\'], ...args)')
+    }).optional().default({}).options({ allowUnknown: true }).description('options pass to sequelize'),
+    modelsPath: Joi.string().required().description('path to your model definitions'),
     models: Joi.array().items(Joi.string()).required()
                .description('model names; models must be located at `<modelsPath>/<modelName>`')
   })).optional().default([])
 }).required();
 
-const connectionCache = new Map();
+const connections = new Map();
+
+function getCacheKey(database, username, password, options = {}) {
+  // build uri string (which should be unique across connections)
+  let key;
+  if (database.match(/[a-zA-Z]+:\/\//)) {
+    key = database;
+  } else {
+    const { dialect = 'mysql', host = '127.0.0.1', port, storage } = options;
+    key = JSON.stringify({ dialect, username, password, host, storage, port, database });
+  }
+
+  return key;
+}
+
+function setConnection(key, connection) {
+  if (connections.has(key)) {
+    throw new Error(`The connection ${key} is defined multiple times.`);
+  }
+
+  connections.set(key, connection);
+}
 
 /**
  * Loads and returns sequelize models.
@@ -40,23 +61,26 @@ function loadModels(config) {
    *    model and database is configured in the config file.
    * 3) We need to associate the model to other models after all are loaded.
    */
-  const models = {};
-  const { Sequelize, modelsPath } = config;
+  const { Sequelize } = config;
 
-  config.databases.forEach((dbConfig) => {
-    const { database } = dbConfig;
-    let connection = null;
-
+  const models = config.connections.reduce((memo, { database, username, password, options, modelsPath, models }) => {
     // 1)
-    connection = new Sequelize(database, config.username, config.password, config.options);
-    connectionCache.set(database, connection);
+    const key = getCacheKey(database, username, password, options);
+    const connection = new Sequelize(database, username, password, options);
+    setConnection(key, connection);
 
     // 2)
-    dbConfig.models.forEach((modelName) => {
-      models[modelName] = connection.import(Path.join(modelsPath, modelName));
-      models[modelName].connection = () => connectionCache.get(database); // add refenrence to sequlize instance
-    });
-  });
+    return models.reduce((memo, modelName) => {
+      if (memo[modelName]) {
+        throw new Error(`The model ${modelName} is defined multiple times.`);
+      }
+
+      memo[modelName] = connection.import(Path.join(modelsPath, modelName));
+      memo[modelName].connection = () => connections.get(key); // add refenrence to sequelize instance
+
+      return memo;
+    }, memo);
+  }, {});
 
   // 3)
   Object.keys(models).forEach((modelName) => {
@@ -74,40 +98,44 @@ function loadModels(config) {
  * close all connections and reset the connection cache
  */
 function closeConnections() {
-  connectionCache.forEach((con) => con.close());
-  connectionCache.clear();
+  connections.forEach((con) => con.close());
+  connections.clear();
 }
 
+/**
+ * plugin definition
+ */
 const plugin = {
   register(server, options, next) {
-    const result = Joi.validate(options, ConfigSchema);
-    if (result.error) {
-      throw result.error;
-    }
+    const pluginConfig = Joi.attempt(options, ConfigSchema);
 
-    const pluginConfig = result.value;
-    if (!pluginConfig.options.logging) {
-      pluginConfig.options.logging = (...msg) => { server.log([ 'trace' ], ...msg); };
-    }
+    // add a logger to all sequelize connections
+    const logger = (...msg) => { server.log([ 'trace', 'sequelize' ], ...msg); };
+    pluginConfig.connections.map((cfg) => {
+      if (!cfg.options.logging) {
+        cfg.options.logging = logger;
+      }
 
-    const models = loadModels(pluginConfig);
-
-    // expose models - they're now available under server.plugins['hapi-sequelize-models'].models
-    server.expose('models', models);
-
-    // on server stop - close all connections and reset connecitons cache
-    server.ext('onPostStop', (server, next) => {
-      closeConnections();
-      return next();
+      return cfg;
     });
 
+    // expose models - they're now available under server.plugins['hapi-sequelize-models'].models
+    server.expose('models', loadModels(pluginConfig));
+
+    // on server stop - close all connections and reset connecitons cache
+    server.ext('onPostStop', plugin.deregister);
+    return next();
+  },
+
+  deregister(server, next) {
+    closeConnections();
     return next();
   }
 };
 
 plugin.register.attributes = {
-  name: pkg.name,
-  version: pkg.version
+  name: Pkg.name,
+  version: Pkg.version
 };
 
 export default plugin;
