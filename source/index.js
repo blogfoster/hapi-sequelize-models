@@ -1,5 +1,4 @@
 import Joi from 'joi';
-import Path from 'path';
 
 import Pkg from '../package';
 
@@ -15,9 +14,20 @@ const ConfigSchema = Joi.object().keys({
       logging: Joi.func().optional()
                   .description('logger function, if not set defaults to server.log([\'trace\'], ...args)')
     }).optional().default({}).options({ allowUnknown: true }).description('options pass to sequelize'),
-    modelsPath: Joi.string().required().description('path to your model definitions'),
-    models: Joi.array().items(Joi.string()).required()
-               .description('model names; models must be located at `<modelsPath>/<modelName>`')
+    models: Joi.array()
+      .items(
+        Joi.object().keys({
+          name: Joi.string()
+            .required()
+            .description('name of the model'),
+          model: Joi.object()
+            .required()
+            .description('the model that should be imported by sequelize')
+        }),
+      )
+      .optional()
+      .default([])
+      .description('array of objects that contain model information')
   })).optional().default([])
 }).required();
 
@@ -63,20 +73,20 @@ function loadModels(config) {
    */
   const { Sequelize } = config;
 
-  const models = config.connections.reduce((memo, { database, username, password, options, modelsPath, models }) => {
+  const models = config.connections.reduce((memo, { database, username, password, options, models }) => {
     // 1)
     const key = getCacheKey(database, username, password, options);
     const connection = new Sequelize(database, username, password, options);
     setConnection(key, connection);
 
     // 2)
-    return models.reduce((memo, modelName) => {
-      if (memo[modelName]) {
-        throw new Error(`The model ${modelName} is defined multiple times.`);
+    return models.reduce((memo, { name, model }) => {
+      if (memo[name]) {
+        throw new Error(`The model ${name} is defined multiple times.`);
       }
 
-      memo[modelName] = connection.import(Path.join(modelsPath, modelName));
-      memo[modelName].connection = () => connections.get(key); // add refenrence to sequelize instance
+      memo[name] = connection.import(name, model);
+      memo[name].connection = () => connections.get(key); // add refenrence to sequelize instance
 
       return memo;
     }, memo);

@@ -35,7 +35,7 @@
     "babel-preset-es2015": "^6.9.0",
     "babel-preset-stage-0": "^6.5.0",
     "eslint": "^2.13.1",
-    "eslint-config-blogfoster": "^1.3.2",
+    "eslint-config-blogfoster": "~1.3.2",
     "expect": "^1.20.1",
     "hapi": "^13.4.1",
     "isparta": "^4.0.0",
