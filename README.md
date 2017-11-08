@@ -3,9 +3,7 @@
 [![travis-develop][004]][005]
 [![npm-dependencies][006]][007]
 
-This is a Hapi plugin to load your sequelize models. Your models should be defined so that
-[they can be imported by sequelize][001]. The plugin itself will not require `Sequelize`,
-instead you have to pass it in as an option.
+This is a Hapi plugin to load your sequelize models.
 
 
 ## usage
@@ -22,8 +20,7 @@ const mysqlConfig = {
   options: {
     host: process.env.MYSQL_HOST,
     dialect: 'mysql'
-  },
-  modelsPath: Path.join(__dirname, '../models')
+  }
 };
 
 return server.register({
@@ -34,12 +31,26 @@ return server.register({
       {
         ...mysqlConfig,
         database: 'test',
-        models: ['test', 'test2']
+        models: [
+          {
+            name: 'test',
+            model: require('../models/test')
+          },
+          {
+            name: 'test2',
+            model: require('../models/test2')
+          }
+        ]
       },
       {
         ...mysqlConfig,
         database: 'test2',
-        models: ['xxx']
+        models: [
+          {
+            name: 'xxx',
+            model: require('../models/xxx')
+          }
+        ]
       }
     ]
   }
@@ -76,17 +87,16 @@ const handler = {
         - `[host]` - *optional* database host
         - `[dialect]` - *optional* database dialect
         - `[logging = (...msg) => server.log(['trace'], ...mgs)]` - *optional* logging function
-    - `modelsPath` - path to your model definitions
-    - `[models = []]` - *optional* list of models that should be loaded
-        - `[*]` - *(String)* model names; models must be located at `<modelsPath>/<modelName>`
+    - `[models]` - list of objects with the following properties:
+        - `name` - name of the model
+        - `model` - the model definition to load with sequelize
 
 ## model definition
 
 Models should be defined so that they can be imported using [sequelize.import][001]. For convenience
 a `.connection()` function is attached to each model, to access its underlaying sequelize connection.
 
-Also models will be availabe using `server.plugins['hapi-sequelize-models'].models.<modelName>`. Here `<modelName>`
-is not the name defined in `sequelize.define`, but the filename, which is also used in the `databases[*].models[*]`.
+Also models will be available using `server.plugins['hapi-sequelize-models'].models.<modelName>`.
 
 ```javascript
 const handler = {
