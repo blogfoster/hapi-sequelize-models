@@ -3,7 +3,9 @@
 [![travis-develop][004]][005]
 [![npm-dependencies][006]][007]
 
-This is a Hapi plugin to load your sequelize models.
+This is a Hapi plugin to load your sequelize models. Your models should be defined so that
+[they can be imported by sequelize][001]. The plugin itself will not require `Sequelize`,
+instead you have to pass it in as an option.
 
 
 ## usage
@@ -96,7 +98,7 @@ const handler = {
 Models should be defined so that they can be imported using [sequelize.import][001]. For convenience
 a `.connection()` function is attached to each model, to access its underlaying sequelize connection.
 
-Also models will be available using `server.plugins['hapi-sequelize-models'].models.<modelName>`.
+Also models will be available using `server.plugins['hapi-sequelize-models'].models.<name>` where `<name>` is the name of the model specified in the config.
 
 ```javascript
 const handler = {
