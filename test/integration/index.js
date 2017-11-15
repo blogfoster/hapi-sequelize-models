@@ -1,9 +1,9 @@
 import expect from 'expect';
 import Hapi from 'hapi';
-import Path from 'path';
 import Sequelize from 'sequelize';
 
 import HapiSequelizeModels from '../../source';
+import models from '../models';
 
 describe('[integration/plugin]', function () {
   describe('wrong configuration', function () {
@@ -13,21 +13,10 @@ describe('[integration/plugin]', function () {
         options: {}
       },
       {
-        description: 'without `modelsPath`',
-        options: {
-          Sequelize,
-          connections: [ {
-            database: 'test'
-          } ]
-        }
-      },
-      {
         description: 'without `database`',
         options: {
           Sequelize,
-          connections: [ {
-            modelsPath: '.'
-          } ]
+          connections: [ {} ]
         }
       },
       {
@@ -35,8 +24,8 @@ describe('[integration/plugin]', function () {
         options: {
           Sequelize,
           connections: [
-            { modelsPath: '.', database: 'test' },
-            { modelsPath: '.', database: 'test' }
+            { database: 'test' },
+            { database: 'test' }
           ]
         }
       },
@@ -45,8 +34,8 @@ describe('[integration/plugin]', function () {
         options: {
           Sequelize,
           connections: [
-            { modelsPath: '.', database: 'test1', models: [ 'test' ] },
-            { modelsPath: '.', database: 'test2', models: [ 'test' ] }
+            { database: 'test1', models: [ { name: 'test', model: models.test } ] },
+            { database: 'test2', models: [ { name: 'test', model: models.test } ] }
           ]
         }
       }
@@ -85,15 +74,8 @@ describe('[integration/plugin]', function () {
       server = new Hapi.Server();
       server.connection({ host: '127.0.0.1', port: 8080 });
 
-      const config1 = {
-        options: { storage: './test.db', dialect: 'sqlite' },
-        modelsPath: Path.join(__dirname, '../models')
-      };
-
-      const config2 = {
-        options: { storage: './test2.db', dialect: 'sqlite' },
-        modelsPath: Path.join(__dirname, '../models')
-      };
+      const config1 = { options: { storage: './test.db', dialect: 'sqlite' } };
+      const config2 = { options: { storage: './test2.db', dialect: 'sqlite' } };
 
       return server.register([
         {
@@ -104,17 +86,36 @@ describe('[integration/plugin]', function () {
               {
                 ...config1,
                 database: 'test',
-                models: [ 'test', 'test2' ]
+                models: [
+                  {
+                    name: 'test',
+                    model: models.test
+                  },
+                  {
+                    name: 'test2',
+                    model: models.test2
+                  }
+                ]
               },
               {
                 ...config1,
                 database: 'test2',
-                models: [ 'xxx' ]
+                models: [
+                  {
+                    name: 'xxx',
+                    model: models.xxx
+                  }
+                ]
               },
               {
                 ...config2,
                 database: 'test3',
-                models: [ 'next' ]
+                models: [
+                  {
+                    name: 'next',
+                    model: models.next
+                  }
+                ]
               }
             ]
           }
