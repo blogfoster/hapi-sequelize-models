@@ -20,7 +20,7 @@ const ConfigSchema = Joi.object().keys({
           name: Joi.string()
             .required()
             .description('name of the model'),
-          model: Joi.object()
+          model: Joi.func()
             .required()
             .description('the model that should be imported by sequelize')
         }),
