@@ -117,11 +117,19 @@ function closeConnections() {
  */
 const plugin = {
   register(server, options, next) {
-    const pluginConfig = Joi.attempt(options, ConfigSchema);
+    const result = Joi.validate(options, ConfigSchema);
+    if (result.error) {
+      console.error(
+        'Error: Can not register sequelize model with invalid options!\n' +
+        `\n  > ${result.error.message}\n\n` +
+        'Please make sure to follow the schema given in the documentation:\n' +
+        'https://github.com/blogfoster/hapi-sequelize-models'
+      );
+    }
 
     // add a logger to all sequelize connections
     const logger = (...msg) => { server.log([ 'trace', 'sequelize' ], ...msg); };
-    pluginConfig.connections.map((cfg) => {
+    options.connections.map((cfg) => {
       if (!cfg.options.logging) {
         cfg.options.logging = logger;
       }
@@ -130,7 +138,7 @@ const plugin = {
     });
 
     // expose models - they're now available under server.plugins['hapi-sequelize-models'].models
-    server.expose('models', loadModels(pluginConfig));
+    server.expose('models', loadModels(options));
 
     // on server stop - close all connections and reset connecitons cache
     server.ext('onPostStop', plugin.deregister);
