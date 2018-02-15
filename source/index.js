@@ -119,7 +119,7 @@ const plugin = {
   register(server, options, next) {
     const result = Joi.validate(options, ConfigSchema);
     if (result.error) {
-      console.error(
+      throw new Error(
         'Error: Can not register sequelize model with invalid options!\n' +
         `\n  > ${result.error.message}\n\n` +
         'Please make sure to follow the schema given in the documentation:\n' +
