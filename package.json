@@ -41,7 +41,7 @@
     "babel-plugin-transform-object-rest-spread": "^6.26.0",
     "eslint": "^4.19.1",
     "eslint-config-blogfoster": "^1.11.3",
-    "expect": "^1.20.1",
+    "expect": "^23.1.0",
     "hapi": "^17.5.1",
     "mocha": "^5.2.0",
     "prettier": "^1.13.4",
