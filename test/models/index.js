@@ -7,5 +7,5 @@ export default {
   next,
   test,
   test2,
-  xxx
+  xxx,
 };

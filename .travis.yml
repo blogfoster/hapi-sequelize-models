@@ -1,24 +1,28 @@
-# run on container based infrastructure
+# dont run on container based infrastructure
 sudo: false
+dist: trusty
+group: travis_latest
 
 language: node_js
 node_js:
-  - "5"
+  - '8'
 
 cache:
   directories:
-    - "./node_modules"
+    - './node_modules'
 
 branches:
   except:
-    - "/^v[0-9]/" # dont build tags separately as they are build anyway for the push
+    - /^v[0-9]/ # dont build tags separately as they are build anyway for the push
 
 install:
   - npm prune
   - npm install
 
+before_script:
+  - npm run check
+
 script:
-  - npm run eslint
   - npm test
 
 deploy:
