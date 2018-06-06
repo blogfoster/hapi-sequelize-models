@@ -1,5 +1,7 @@
 # hapi-sequelize-models
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/blogfoster/hapi-sequelize-models.svg)](https://greenkeeper.io/)
+
 [![travis-develop][004]][005]
 [![npm-dependencies][006]][007]
 
