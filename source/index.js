@@ -124,7 +124,7 @@ const loadModels = config => {
         }
 
         memo[name] = connection.import(name, model);
-        memo[name].connection = () => connections.get(key); // add refenrence to sequelize instance
+        memo[name].connection = () => connections.get(key); // add reference to sequelize instance
 
         return memo;
       }, memo);
@@ -141,7 +141,7 @@ const loadModels = config => {
     }
   });
 
-  return Object.freeze(models); // prevent models object from beeing mutated
+  return Object.freeze(models); // prevent models object from being mutated
 };
 
 /**

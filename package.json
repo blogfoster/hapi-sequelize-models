@@ -5,7 +5,7 @@
   "main": "lib/index.js",
   "scripts": {
     "compile": "rm -rf ./lib && babel -d ./lib ./source --copy-files",
-    "prepublish": "npm run compile",
+    "prepublishOnly": "npm run compile",
     "test": "NODE_ENV=test mocha './test/**/*.js'",
     "_eslint": "eslint . --cache --cache-location ./node_modules/.cache/eslintcache",
     "_prettier": "prettier --config .prettierrc.js '**/*.{js,json}'",
@@ -32,13 +32,12 @@
     "joi": "^13.4.0"
   },
   "devDependencies": {
-    "babel-cli": "^6.26.0",
-    "babel-core": "^6.26.3",
-    "babel-plugin-syntax-trailing-function-commas": "^6.22.0",
-    "babel-plugin-transform-class-properties": "^6.24.1",
-    "babel-plugin-transform-es2015-modules-commonjs": "^6.26.2",
-    "babel-plugin-transform-export-extensions": "^6.22.0",
-    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "@babel/cli": "^7.0.0-beta.49",
+    "@babel/core": "^7.0.0-beta.49",
+    "@babel/plugin-proposal-export-default-from": "^7.0.0-beta.49",
+    "@babel/plugin-proposal-object-rest-spread": "^7.0.0-beta.49",
+    "@babel/plugin-transform-modules-commonjs": "^7.0.0-beta.49",
+    "@babel/register": "^7.0.0-beta.49",
     "eslint": "^4.19.1",
     "eslint-config-blogfoster": "^1.11.3",
     "expect": "^1.20.1",
