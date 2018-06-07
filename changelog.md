@@ -1,4 +1,4 @@
-### next
+### v3.0.2
 
 - chore: update dependencies
 - ci: use `prepublishOnly` step instead of `prepublish`
